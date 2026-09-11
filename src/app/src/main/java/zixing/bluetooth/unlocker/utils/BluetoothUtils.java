@@ -31,6 +31,10 @@ public class BluetoothUtils {
         return bluetoothInstance;
     }
 
+    public ArrayList<DeviceBean> getDeviceBeans() {
+        return new ArrayList<>(deviceBeans);
+    }
+
     public void initBluetooth(Context context){
         this.context = context;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -54,12 +58,10 @@ public class BluetoothUtils {
         {
             for (BluetoothDevice device:bondedDevices
                  ) {
-                    int rssi = 3;
                     DeviceBean bean=new DeviceBean();
                     bean.setAddress(device.getAddress());
-                    bean.setRssi(rssi);
                     bean.setName(device.getName());
-                    bean.setDistance(getDistance(rssi));
+                    bean.setDistance(getDistance(Integer.MIN_VALUE));
                     bean.setStatus(device.getBondState() == BluetoothDevice.BOND_BONDED);
                     deviceBeans.add(bean);
                     if(!dev_mac_adress.contains(device.getAddress())){
@@ -68,7 +70,7 @@ public class BluetoothUtils {
                     }else {
                         bluetoothInterface.updateBluetoothDervice(bean);
                     }
-                    Log.e(TAG,device.getName()+"："+device.getAddress()+" "+rssi+"  "+bean.getDistance());
+                    Log.e(TAG,device.getName()+"："+device.getAddress()+" N/A  "+bean.getDistance());
             }
         }
     }
@@ -82,9 +84,7 @@ public class BluetoothUtils {
         intent.addAction(BluetoothDevice.ACTION_FOUND);
         intent.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         intent.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-//        intent.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);//状态改变
-//        intent.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);//行动扫描模式改变了
-//        intent.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);//动作状态发生了变化
+        intent.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         context.registerReceiver(bluetoothBroadcast, intent);
         Log.i(TAG,"registerReceiver");
 
@@ -121,6 +121,22 @@ public class BluetoothUtils {
                 dev_mac_adress = "";
                 bluetoothInterface.onBluetoothFinish();
                 deviceBeans.clear();
+            }else if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(intent.getAction())){
+                //配对状态改变
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                int bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                if(device != null && bondState == BluetoothDevice.BOND_NONE){
+                    String address = device.getAddress();
+                    for(int i = 0; i < deviceBeans.size(); i++){
+                        if(address.equals(deviceBeans.get(i).getAddress())){
+                            deviceBeans.remove(i);
+                            dev_mac_adress = dev_mac_adress.replace(address, "");
+                            bluetoothInterface.updateBluetoothDervice(null);
+                            Log.e(TAG,"取消配对："+device.getName()+"："+address);
+                            break;
+                        }
+                    }
+                }
             }
         }
     };

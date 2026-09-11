@@ -33,6 +33,10 @@ mibluetoothunlocker 非小米手环蓝牙解锁小米手机的xposed插件
 
 4.2版本 修复了一个启用解锁提示可能会卡在解锁界面的bug
 
+5.1.3版本 设备选择页长按设备可直接在系统中取消蓝牙配对
+
+5.1.2版本 修复设备选择列表中已配对设备信号强度和距离显示为Unknown的问题
+
 
 后续更新欢迎关注公众号：V安全突击队
 ![V安全突击队](https://github.com/zixing131/mibluetoothunlocker/assets/18580281/c6185042-b697-4467-aa7c-f800ae2cf273)

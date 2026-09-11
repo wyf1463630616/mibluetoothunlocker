@@ -51,9 +51,12 @@ public class DerviceAdapter extends BaseRecyclerViewAdapter<DeviceBean> {
         MyViewHolder holder = (MyViewHolder) viewHolder;
         DeviceBean data = list.get(position);
         if (data == null) return;
-        holder.txtAddress.setText(data.getName().isEmpty()?"Unknown":data.getName());
-        holder.txtMac.setText(data.getAddress().isEmpty()?"Unknown":data.getAddress());
-        if(data.getRssi()<1)
+        String name = data.getName();
+        holder.txtAddress.setText((name == null || name.isEmpty()) ? "Unknown" : name);
+
+        String addr = data.getAddress();
+        holder.txtMac.setText((addr == null || addr.isEmpty()) ? "Unknown" : addr);
+        if(data.getRssi() < 0)
         {
             holder.txtRssi.setText(data.getRssi()+"dB");
             holder.txtTime.setText(String.format("%.2f", data.getDistance())+"m");
