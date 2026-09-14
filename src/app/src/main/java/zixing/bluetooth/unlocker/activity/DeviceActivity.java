@@ -146,6 +146,8 @@ public class DeviceActivity extends BaseActivity implements BluetoothUtils.Bluet
                     builder.setPositiveButton("确定", (dialog, which) -> {
                         dialog.dismiss();
                         //这里保存数据
+                        // 5.1.1：名称为 Unknown 的设备其 MAC 可能为空，
+                        // 空地址写入配置会导致后续读取/解锁异常，这里先拦截
                         if (bean.getAddress() == null || bean.getAddress().isEmpty()) {
                             Toast.makeText(self, "设备地址无效，无法选择", Toast.LENGTH_SHORT).show();
                             return;

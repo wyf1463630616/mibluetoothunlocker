@@ -58,10 +58,13 @@ public class BluetoothUtils {
         {
             for (BluetoothDevice device:bondedDevices
                  ) {
+                    // 已配对设备列表无法直接读取 RSSI，先写入占位值便于调试对照
+                    int rssi = 3;
                     DeviceBean bean=new DeviceBean();
                     bean.setAddress(device.getAddress());
+                    bean.setRssi(rssi);
                     bean.setName(device.getName());
-                    bean.setDistance(getDistance(Integer.MIN_VALUE));
+                    bean.setDistance(getDistance(rssi));
                     bean.setStatus(device.getBondState() == BluetoothDevice.BOND_BONDED);
                     deviceBeans.add(bean);
                     if(!dev_mac_adress.contains(device.getAddress())){
@@ -70,7 +73,7 @@ public class BluetoothUtils {
                     }else {
                         bluetoothInterface.updateBluetoothDervice(bean);
                     }
-                    Log.e(TAG,device.getName()+"："+device.getAddress()+" N/A  "+bean.getDistance());
+                    Log.e(TAG,device.getName()+"："+device.getAddress()+" "+rssi+"  "+bean.getDistance());
             }
         }
     }
